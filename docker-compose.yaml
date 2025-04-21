@@ -1,0 +1,15 @@
+services:
+  chat-app-db:
+    image: postgres:latest
+    container_name: chat-app-db
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: chat_app_db
+    ports:
+      - "5460:5432"
+    volumes:
+      - chat-app-db-data:/var/lib/postgresql/data
+volumes:
+  chat-app-db-data:
+    
