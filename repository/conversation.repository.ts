@@ -2,9 +2,15 @@ import Conversation, { ConversationCreateInstance } from "../models/Conversation
 import User from "../models/User.model";
 
 class ConversationRepository {
+    findById = async (conversationId: string) => {
+        const conversation = await Conversation.findByPk(conversationId);
+        return conversation
+    }
+
     createConversation = async (conversation: ConversationCreateInstance, transaction = null) => {
         const newConversation = await Conversation.create({
             id: conversation.id,
+            typ: conversation.typ,
             name: conversation.name,
             ownerId: conversation.ownerId,
         }, transaction ? { transaction: transaction } : {})

@@ -1,7 +1,7 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import sequelize from "../config/database";
 
-interface MessageInstance {
+export interface MessageInstance {
     id: string
     deleted: boolean
     createdAt: Date

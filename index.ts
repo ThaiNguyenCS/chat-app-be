@@ -9,8 +9,12 @@ import globalErrorHandler from "./errors/error-handler";
 import "./models/association"
 import userRouter from "./routes/user.route";
 import conversationRouter from "./routes/conversation.route";
+import cors from "cors";
 
 const app = express();
+app.use(cors({
+    origin: "*"
+}))
 app.use(express.json()); // parse json from request body
 app.use("/auth", authRouter);
 app.use("/users", userRouter);

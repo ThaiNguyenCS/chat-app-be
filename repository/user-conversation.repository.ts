@@ -23,6 +23,7 @@ class UserConversationRepository {
             ...(transaction ? { transaction: transaction } : {})
         });
     }
+
 }
 
 export default UserConversationRepository;

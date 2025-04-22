@@ -3,9 +3,22 @@ interface ApiResponse<T = any> {
     message: string;
     data?: T;
     error?: any;
+    limit?: number;
+    page?: number;
+    totalPages?: number;
 }
 
-export function successResponse<T>(message: string, data?: T): ApiResponse<T> {
+export function successResponse<T>(message: string, data?: T, limit?: number, page?: number, totalPages?: number): ApiResponse<T> {
+    if (totalPages && page && limit) {
+        return {
+            success: true,
+            message,
+            data,
+            page,
+            limit,
+            totalPages
+        };
+    }
     return {
         success: true,
         message,
