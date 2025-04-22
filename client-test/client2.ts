@@ -1,6 +1,6 @@
 import { io } from "socket.io-client";
-const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjQ3ZDI4ZDE1LWVmOWEtNGVlNy1hNjhmLThjMjQ3YmMxZGIxMCIsInBob25lTnVtYmVyIjoiMDU1OTQzNTQ2NyIsImlhdCI6MTc0NTMxMjUzMywiZXhwIjoxNzQ3OTA0NTMzfQ.FBJriR6n7t6wSuOc-bdydMCu-LsJKN0QkELP0CtvJks"
-const conversations: string[] = ["d5a0e231-36af-4816-a133-28aa1659f053"]
+const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjIyOGYxZWVkLWRlOTAtNGJhMy05MzJjLTdmZWNhOWFiNTc0YyIsInBob25lTnVtYmVyIjoiMDU1OTQzNTQ2NyIsImlhdCI6MTc0NTMzNzg1MiwiZXhwIjoxNzQ3OTI5ODUyfQ.SUXRAY_UZ3MYhov7qfyl78k32t-YtOlXRi0-yBNrfkU"
+const conversations: string[] = ["74c61bec-103d-48c6-b5ea-75a6efb3dfa9"]
 const socket = io("http://localhost:5000",
     {
         auth: {

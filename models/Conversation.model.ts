@@ -1,5 +1,6 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import sequelize from "../config/database";
+import User from "./User.model";
 
 interface ConversationInstance {
     id: string
@@ -7,8 +8,11 @@ interface ConversationInstance {
     name: string
     createdAt: Date
     ownerId: string
-    typ: "group" | "private"
+    typ: "group" | "private",
+    Users?: User[];
 }
+
+
 
 export interface ConversationCreateInstance extends Optional<ConversationInstance, 'deleted' | 'createdAt'> {
 }
@@ -20,6 +24,7 @@ class Conversation extends Model<ConversationInstance, ConversationCreateInstanc
     public name!: string;
     public typ!: "group" | "private";
     public ownerId!: string
+    public Users!: User[]
 }
 
 Conversation.init({

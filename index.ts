@@ -22,7 +22,7 @@ app.use("/conversations", conversationRouter);
 
 (async () => {
     try {
-        await sequelize.authenticate();
+        // await sequelize.authenticate();
         // await sequelize.sync({ alter: true });
         logger.info("Connection to the database has been established successfully.");
         const server = createServer(app);

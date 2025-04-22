@@ -1,5 +1,8 @@
+import { Op } from "sequelize";
 import Conversation, { ConversationCreateInstance } from "../models/Conversation.model";
+import Message from "../models/Message.model";
 import User from "../models/User.model";
+import { ConversationResponse, toConversationDTO } from "../dto/response/conversation.dto";
 
 class ConversationRepository {
     findById = async (conversationId: string) => {
@@ -18,22 +21,38 @@ class ConversationRepository {
     }
 
     getConversations = async (userId: string, transaction = null) => {
-        return await Conversation.findAll({
+        const conversations = await Conversation.findAll({
             include: [
                 {
                     model: User,
-                    attributes: [],
+                    attributes: ["id"],
                     through: {
-                        attributes: [], // Exclude the join table attributes}]
+                        attributes: ["lastSeenAt"],
                         where: {
                             userId: userId // Filter by the user ID
                         }
+
                     },
 
                 }
             ],
             ...(transaction ? { transaction: transaction } : {})
         })
+        const result: ConversationResponse[] = await Promise.all(conversations.map(async c => {
+            console.log(c)
+            const timeline = new Date(c.getDataValue("Users")![0]!.getDataValue("User_Conversations")!.getDataValue("lastSeenAt"))
+
+            const count = await Message.count({
+                where: {
+
+                    createdAt: { [Op.gt]: timeline }
+                }
+            })
+            const conv = toConversationDTO(c)
+            conv.unreadMessage = count;
+            return conv
+        }))
+        return result
     }
 }
 

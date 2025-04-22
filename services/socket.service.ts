@@ -99,13 +99,17 @@ class SocketService {
                 logger.info("Message received: " + content + " in conversation: " + conversationId);
                 await messageSchema.validateAsync(data);
                 // store message in database
-                await messageService.createMessage({
+                const newMsg = await messageService.createMessage({
                     id: generateUUID(),
                     content: data.content,
                     senderId: userId,
                     conversationId: data.conversationId,
                     mediaUrl: data.mediaUrl,
                     mediaType: data.mediaType,
+                })
+                // sender's seen value must be updated 
+                await conversationService.seenAck({
+                    userId, conversationId, timestamp: newMsg.getDataValue("createdAt").toISOString()
                 })
                 // emit message to all clients in conversation
                 const users = await conversationService.getUsersOfAConversation(data.conversationId)

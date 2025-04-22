@@ -2,6 +2,7 @@ services:
   chat-app-db:
     image: postgres:latest
     container_name: chat-app-db
+    restart: "always"
     environment:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres

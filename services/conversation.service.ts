@@ -4,13 +4,13 @@ import Conversation from "../models/Conversation.model";
 import runTransaction from "../utils/transaction-manager";
 import UserConversationRepository from "../repository/user-conversation.repository";
 import AppError from "../errors/AppError";
-import { toConversationDTO } from "../dto/conversation.dto";
 import UserRepository from "../repository/user.repository";
 import { generateUUID } from "../utils/uuid";
 import { Op } from "sequelize";
 import Message from "../models/Message.model";
 import { toMessageDTO } from "../dto/message.dto";
 import User_Conversation from "../models/User_Conversation.model";
+import { toConversationDTO } from "../dto/response/conversation.dto";
 
 class ConversationService {
     private conversationRepository: ConversationRepository;
@@ -45,7 +45,7 @@ class ConversationService {
 
     getConversations = async (userId: string) => {
         const conversations = await this.conversationRepository.getConversations(userId)
-        return conversations.map((conversation: Conversation) => toConversationDTO(conversation));
+        return conversations;
     }
 
     createConversation = async (userId: string, data: { name: string, userIds: string[] }) => {

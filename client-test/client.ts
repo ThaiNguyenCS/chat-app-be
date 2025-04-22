@@ -1,6 +1,6 @@
 import { io } from "socket.io-client";
-const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjVjZjRhMTYxLWQwMmQtNGNlNy1hZWVlLWY3MGJjMmYzMmE5MSIsInBob25lTnVtYmVyIjoiMDk2NDkyNzQzNyIsImlhdCI6MTc0NTMxMjUwNCwiZXhwIjoxNzQ3OTA0NTA0fQ.Cfvz2t6igkqp_rZABkI9NPkMpDSrSTFbNSi65Tn_8o0"
-const conversations: string[] = ["d5a0e231-36af-4816-a133-28aa1659f053"]
+const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImMxYzQ2Mjg0LWMxM2QtNDk3YS1iMzJiLTg2NmFhMzQ0YTc5MyIsInBob25lTnVtYmVyIjoiMDk2NDkyNzQzNyIsImlhdCI6MTc0NTMzNzgzOSwiZXhwIjoxNzQ3OTI5ODM5fQ.9tKNqJ3DnruTictRxY9YsJFDrHF8sWoQX7Eu8shxUag"
+const conversations: string[] = ["74c61bec-103d-48c6-b5ea-75a6efb3dfa9"]
 const socket = io("http://localhost:5000",
     {
         auth: {
@@ -39,7 +39,7 @@ process.stdin.on('data', async function (input: string) {
             break;
         case "send":
             try {
-                const response = await socket.emitWithAck("message", { content: cmds[2], conversationId: conversations[parseInt(cmds[1])] })
+                const response = await socket.timeout(10000).emitWithAck("message", { content: cmds[2], conversationId: conversations[parseInt(cmds[1])] })
                 console.log("Server acknowledged with:", response);
             } catch (error) {
                 console.error("error when sending message ", error);

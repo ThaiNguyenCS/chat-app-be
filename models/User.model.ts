@@ -1,5 +1,6 @@
 import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
+import User_Conversation from "./User_Conversation.model";
 
 interface UserInstance {
     id: string
@@ -13,6 +14,7 @@ interface UserInstance {
     createdAt: Date,
     avatarUrl: string,
     backgroundUrl: string,
+    User_Conversations?: User_Conversation
 }
 
 export interface UserCreateInstance extends Omit<UserInstance, "createdAt"> { };
