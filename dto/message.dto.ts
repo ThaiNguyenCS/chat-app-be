@@ -5,7 +5,7 @@ export const toMessageDTO = (message: MessageInstance) => {
         id: message.id,
         content: message.content,
         mediaUrl: message.mediaUrl,
-        senderId: message.senderId,
+        sender: message.sender,
         mediaType: message.mediaType,
         createdAt: message.createdAt,
     }

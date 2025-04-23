@@ -8,6 +8,7 @@ import UserConversationRepository from "../repository/user-conversation.reposito
 import UserRepository from "../repository/user.repository";
 import AuthService from "../services/auth.service";
 import ConversationService from "../services/conversation.service";
+import ConversationValidator from "../services/conversationValidator.service";
 import MessageService from "../services/message.service";
 import SocketService from "../services/socket.service";
 import UserService from "../services/user.service";
@@ -29,9 +30,12 @@ const messageService = new MessageService({ messageRepository })
 
 const userConversationRepository = new UserConversationRepository()
 
+
 const conversationRepository = new ConversationRepository()
-const conversationService = new ConversationService({ conversationRepository, userConversationRepository, userRepository })
+export const conversationValidator = new ConversationValidator({ conversationRepository })
+const conversationService = new ConversationService({ conversationRepository, userConversationRepository, conversationValidator, userRepository })
 const conversationController = new ConversationController({ conversationService })
+
 
 
 export { socketService, authController, userController, messageService, conversationService, conversationController };

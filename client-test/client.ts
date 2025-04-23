@@ -1,5 +1,9 @@
 import { io } from "socket.io-client";
+
+import axios from "axios";
 const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6ImMxYzQ2Mjg0LWMxM2QtNDk3YS1iMzJiLTg2NmFhMzQ0YTc5MyIsInBob25lTnVtYmVyIjoiMDk2NDkyNzQzNyIsImlhdCI6MTc0NTMzNzgzOSwiZXhwIjoxNzQ3OTI5ODM5fQ.9tKNqJ3DnruTictRxY9YsJFDrHF8sWoQX7Eu8shxUag"
+const SERVER_URL = "http://localhost:5000"
+
 const conversations: string[] = ["74c61bec-103d-48c6-b5ea-75a6efb3dfa9"]
 const socket = io("http://localhost:5000",
     {
@@ -23,8 +27,28 @@ socket.on("typing", (data) => {
 
 socket.on("seen", (data) => {
     console.log(`seen`, data)
-})
+});
 
+
+(async () => {
+    try {
+        const response = await axios.get(`${SERVER_URL}/conversations/${conversations[0]}/messages`,
+            {
+                headers: {
+                    "Authorization": `Bearer ${token}`
+                }
+            }
+        )
+        const data = response.data
+        for (const msg of data.data) {
+            console.log(msg)
+        }
+    } catch (error) {
+        console.log(error);
+
+    }
+
+})()
 
 
 process.stdin.on('data', async function (input: string) {

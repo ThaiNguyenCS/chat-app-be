@@ -1,4 +1,5 @@
 import Conversation from "./Conversation.model";
+import Message from "./Message.model";
 import User from "./User.model";
 
 User.belongsToMany(Conversation, {
@@ -9,4 +10,11 @@ User.belongsToMany(Conversation, {
 Conversation.belongsToMany(User, {
     through: "User_Conversations",
     foreignKey: "conversationId"
+})
+
+
+Message.belongsTo(User, {
+    foreignKey: "senderId",
+    targetKey: "id",
+    as: "sender"
 })

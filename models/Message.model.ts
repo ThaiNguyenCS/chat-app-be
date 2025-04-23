@@ -1,5 +1,6 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import sequelize from "../config/database";
+import User from "./User.model";
 
 export interface MessageInstance {
     id: string
@@ -11,6 +12,7 @@ export interface MessageInstance {
     mediaUrl: string
     mediaType: string
     status: string
+    sender? : User
 }
 
 export interface MessageCreateInstance extends Optional<MessageInstance, 'deleted' | 'createdAt' | 'mediaType' | 'mediaUrl' | "status"> {

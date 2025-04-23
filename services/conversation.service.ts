@@ -11,15 +11,19 @@ import Message from "../models/Message.model";
 import { toMessageDTO } from "../dto/message.dto";
 import User_Conversation from "../models/User_Conversation.model";
 import { toConversationDTO } from "../dto/response/conversation.dto";
+import ConversationValidator from "./conversationValidator.service";
 
 class ConversationService {
     private conversationRepository: ConversationRepository;
     private userConversationRepository: UserConversationRepository;
     private userRepository: UserRepository;
-    constructor({ conversationRepository, userConversationRepository, userRepository }: { conversationRepository: ConversationRepository, userConversationRepository: UserConversationRepository, userRepository: UserRepository }) {
+    private conversationValidator: ConversationValidator;
+
+    constructor({ conversationRepository, userConversationRepository, userRepository, conversationValidator }: { conversationRepository: ConversationRepository, userConversationRepository: UserConversationRepository, userRepository: UserRepository, conversationValidator: ConversationValidator }) {
         this.conversationRepository = conversationRepository // Replace with actual initialization
         this.userConversationRepository = userConversationRepository
         this.userRepository = userRepository;
+        this.conversationValidator = conversationValidator;
     }
 
     checkIfPrivateConversationExists = async (userIds: string[]) => {
@@ -98,7 +102,6 @@ class ConversationService {
     }
 
 
-
     addUsersToConversation = async (conversationId: string, userId: string) => {
 
     }
@@ -107,32 +110,19 @@ class ConversationService {
 
     }
 
-
     getMessagesOfConversation = async (userId: string, data: { conversationId: string, limit: number, page: number }) => {
         const { conversationId, page, limit } = data
-        const conversation = await this.conversationRepository.findById(conversationId);
-        // check if conversation exists
-        if (!conversation) {
-            throw new AppError(404, `Conversation ${conversationId} not found`);
-        }
-
-        // check if user is in this conversation
-        const isExist = await User_Conversation.findOne({
-            where: {
-                userId: userId,
-                conversationId: conversationId,
-                deleted: false
-            }
-        })
-
-        if (!isExist) {
-            throw new AppError(403, `Conversation ${conversationId} not found or deleted`);
-        }
+        await this.conversationValidator.ensureUserInConversation(userId, conversationId);
 
         const res = await Message.findAndCountAll({
             where: {
                 conversationId: conversationId
             },
+            include: [{
+                model: User,
+                as: "sender",
+                attributes: ["id", "displayName", "avatarUrl"]
+            }],
             order: [["createdAt", "DESC"]],
             limit: 50,
             offset: (page - 1) * limit
@@ -153,6 +143,7 @@ class ConversationService {
             page: page,
         }
     }
+
     seenAck = async (data: {
         userId: string,
         conversationId: string,
