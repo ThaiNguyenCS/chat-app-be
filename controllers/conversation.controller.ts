@@ -3,13 +3,26 @@ import ConversationService from "../services/conversation.service";
 import { AuthenticatedRequest } from "../middlewares/authenticate.middleware";
 import { successResponse } from "../types/ApiResponse";
 import { createConversationSchema, getMessagesSchema } from "../validators/conversation-schema";
+import MessageService from "../services/message.service";
 
 class ConversationController {
     private conversationService: ConversationService; // Replace with actual type
-
-    constructor({ conversationService }: { conversationService: ConversationService }) {
-
+    private messageService: MessageService; // Replace with actual type
+    constructor({ conversationService, messageService }: { conversationService: ConversationService, messageService: MessageService }) {
+        this.messageService = messageService
         this.conversationService = conversationService; // Replace with actual type
+    }
+
+    getConversation = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            const conversation = await this.conversationService.getConversation(req.user!.id, {
+                conversationId:
+                    req.params.conversationId
+            });
+            res.status(200).json(successResponse("Get conversation successfully", conversation));
+        } catch (error: any) {
+            next(error)
+        }
     }
 
     getConversations = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
@@ -57,6 +70,18 @@ class ConversationController {
         }
     }
 
+
+    deleteMessage = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+        try {
+            const data = {
+                messageId: req.params.messageId
+            }
+            await this.messageService.deleteMessage(req.user!.id, data)
+            res.status(200).send(successResponse("Delete message successfully"))
+        } catch (error) {
+            next(error)
+        }
+    }
 }
 
 export default ConversationController;

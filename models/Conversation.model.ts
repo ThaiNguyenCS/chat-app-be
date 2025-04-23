@@ -7,7 +7,6 @@ interface ConversationInstance {
     deleted: boolean
     name: string
     createdAt: Date
-    ownerId: string
     typ: "group" | "private",
     Users?: User[];
 }
@@ -23,7 +22,6 @@ class Conversation extends Model<ConversationInstance, ConversationCreateInstanc
     public createdAt!: Date;
     public name!: string;
     public typ!: "group" | "private";
-    public ownerId!: string
     public Users!: User[]
 }
 
@@ -44,14 +42,6 @@ Conversation.init({
     createdAt: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW,
-    },
-    ownerId: {
-        type: DataTypes.STRING,
-        allowNull: false,
-        references: {
-            model: "Users",
-            key: "id",
-        }
     },
     typ: {
         type: DataTypes.ENUM("group", "private"),

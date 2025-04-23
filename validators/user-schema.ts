@@ -1,4 +1,5 @@
 import Joi from "joi";
+import { SEX } from "../models/User.model";
 
 export const createProfileSchema = Joi.object({
     lastName: Joi.string().min(1).optional(),
@@ -6,6 +7,6 @@ export const createProfileSchema = Joi.object({
     email: Joi.string().email().optional(),
     displayName: Joi.string().min(1).optional(),
     selfDescription: Joi.string().optional(),
-    sex: Joi.string().valid("male", "female", "other").required(),
+    sex: Joi.string().valid(...Object.values(SEX)).required(),
     dob: Joi.date().iso().less("now").required(),
 })

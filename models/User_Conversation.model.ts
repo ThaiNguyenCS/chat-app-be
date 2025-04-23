@@ -1,15 +1,18 @@
 import { DataTypes, Model, Optional } from "sequelize";
 import sequelize from "../config/database";
 
+export const USER_ROLES_IN_CONVERSATION = { OWNER: "owner", MEMBER: "member" }
+
 interface User_ConversationInstance {
     userId: string
     conversationId: string
     createdAt: Date,
     lastSeenAt: Date,
     deleted: boolean
+    role: string
 }
 
-interface User_ConversationCreateInstance extends Optional<User_ConversationInstance, "createdAt" | "deleted" | "lastSeenAt"> { };
+interface User_ConversationCreateInstance extends Optional<User_ConversationInstance, "createdAt" | "deleted" | "lastSeenAt" | "role"> { };
 
 class User_Conversation extends Model<User_ConversationInstance, User_ConversationCreateInstance> implements User_ConversationInstance {
     public userId!: string;
@@ -17,6 +20,7 @@ class User_Conversation extends Model<User_ConversationInstance, User_Conversati
     public deleted!: boolean;
     public createdAt!: Date;
     public lastSeenAt!: Date;
+    public role!: string
 }
 
 User_Conversation.init(
@@ -37,6 +41,14 @@ User_Conversation.init(
                 key: "id"
             }
         },
+        role: {
+            type: DataTypes.ENUM(...Object.values(USER_ROLES_IN_CONVERSATION)),
+            validate: {
+                isIn: [Object.values(USER_ROLES_IN_CONVERSATION)]
+            },
+            defaultValue: "member"
+        }
+        ,
         createdAt: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW,

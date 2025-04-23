@@ -2,6 +2,8 @@ import { DataTypes, Model } from "sequelize";
 import sequelize from "../config/database";
 import User_Conversation from "./User_Conversation.model";
 
+export const SEX = { MALE: "male", FEMALE: "female", OTHER: "other" };
+
 interface UserInstance {
     id: string
     sex: string
@@ -31,7 +33,9 @@ class User extends Model<UserInstance, UserCreateInstance> implements UserInstan
     public createdAt!: Date;
     public avatarUrl!: string;
     public backgroundUrl!: string;
+    public User_Conversations!: User_Conversation;
 }
+
 
 User.init(
     {
@@ -45,10 +49,10 @@ User.init(
             }
         },
         sex: {
-            type: DataTypes.ENUM("male", "female", "other"),
+            type: DataTypes.ENUM(...Object.values(SEX)),
             allowNull: false,
             validate: {
-                isIn: [["male", "female", "other"]]
+                isIn: [Object.values(SEX)]
             }
         },
         lastName: {

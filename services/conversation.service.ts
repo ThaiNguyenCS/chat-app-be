@@ -9,9 +9,10 @@ import { generateUUID } from "../utils/uuid";
 import { Op } from "sequelize";
 import Message from "../models/Message.model";
 import { toMessageDTO } from "../dto/message.dto";
-import User_Conversation from "../models/User_Conversation.model";
-import { toConversationDTO } from "../dto/response/conversation.dto";
+import User_Conversation, { USER_ROLES_IN_CONVERSATION } from "../models/User_Conversation.model";
 import ConversationValidator from "./conversationValidator.service";
+import { ConversationQueryDTO, ConversationResponse, toConversationDTO } from "../dto/response/conversation.dto";
+import { toUserDto } from "../dto/response/user.dto";
 
 class ConversationService {
     private conversationRepository: ConversationRepository;
@@ -47,9 +48,35 @@ class ConversationService {
         return conversation
     }
 
+    getConversation = async (userId: string, data: ConversationQueryDTO) => {
+        await this.conversationValidator.ensureUserInConversation(userId, data.conversationId);
+        const conversation = await this.conversationRepository.getConversation(data.conversationId);
+        let formatConversation: any = conversation
+        formatConversation.Users = conversation!.Users.map(u => {
+            console.log(u.User_Conversations.getDataValue("lastSeenAt"));
+            return toUserDto(u)
+        })
+        formatConversation = toConversationDTO(formatConversation)
+        return formatConversation;
+    }
+
+
     getConversations = async (userId: string) => {
         const conversations = await this.conversationRepository.getConversations(userId)
-        return conversations;
+        const result: ConversationResponse[] = await Promise.all(conversations.map(async c => {
+            const timeline = new Date(c.getDataValue("Users")![0]!.getDataValue("User_Conversations")!.getDataValue("lastSeenAt"))
+
+            const count = await Message.count({
+                where: {
+
+                    createdAt: { [Op.gt]: timeline }
+                }
+            })
+            const conv = toConversationDTO(c)
+            conv.unreadMessage = count;
+            return conv
+        }))
+        return result;
     }
 
     createConversation = async (userId: string, data: { name: string, userIds: string[] }) => {
@@ -77,11 +104,13 @@ class ConversationService {
             const conversation = await this.conversationRepository.createConversation({
                 id: generateUUID(), // Assuming userId is the conversation ID for simplicity
                 name: name, // Default name, can be changed later
-                ownerId: userId, // Assuming the user creating the conversation is the owner
                 typ: conversationType, // Assuming group conversation for simplicity
             }, transaction);
 
             await this.userConversationRepository.addUsersToConversation(conversation.id, [userId, ...data.userIds], transaction)
+
+            // make the user create this conversation to be owner 
+            await this.userConversationRepository.update(conversation.id, userId, { role: USER_ROLES_IN_CONVERSATION.OWNER })
             return conversation;
         })
     }

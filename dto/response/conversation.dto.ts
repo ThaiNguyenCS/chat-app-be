@@ -1,13 +1,18 @@
 import Conversation from "../../models/Conversation.model";
+import User from "../../models/User.model";
 
 export interface ConversationResponse {
     id: string;
     deleted?: boolean;
     name: string;
     createdAt: Date;
-    ownerId: string;
     typ: "group" | "private";
     unreadMessage?: number;
+    Users?: User[]
+}
+
+export type ConversationQueryDTO = {
+    conversationId: string
 }
 
 export const toConversationDTO = (conversation: Conversation) => {
@@ -15,7 +20,7 @@ export const toConversationDTO = (conversation: Conversation) => {
         id: conversation.id,
         name: conversation.name,
         createdAt: conversation.createdAt,
-        ownerId: conversation.ownerId,
-        typ: conversation.typ
+        typ: conversation.typ,
+        Users: conversation.Users
     } as ConversationResponse
 }

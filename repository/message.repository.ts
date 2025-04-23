@@ -27,7 +27,7 @@ class MessageRepository {
     }
 
     async deleteMessage(messageId: string) {
-        await Message.update(
+        return await Message.update(
             {
                 deleted: true,
             },

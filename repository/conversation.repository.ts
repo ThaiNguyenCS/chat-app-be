@@ -1,8 +1,5 @@
-import { Op } from "sequelize";
 import Conversation, { ConversationCreateInstance } from "../models/Conversation.model";
-import Message from "../models/Message.model";
 import User from "../models/User.model";
-import { ConversationResponse, toConversationDTO } from "../dto/response/conversation.dto";
 
 class ConversationRepository {
     findById = async (conversationId: string) => {
@@ -15,9 +12,28 @@ class ConversationRepository {
             id: conversation.id,
             typ: conversation.typ,
             name: conversation.name,
-            ownerId: conversation.ownerId,
         }, transaction ? { transaction: transaction } : {})
         return newConversation
+    }
+
+
+    getConversation = async (conversationId: string, transaction = null) => {
+        const conversation = await Conversation.findOne({
+            include: [
+                {
+                    model: User,
+                    attributes: ["id", "avatarUrl", "displayName"],
+                    through: {
+                        attributes: ["lastSeenAt", "role"],
+                    },
+                }
+            ],
+            where: {
+                id: conversationId
+            },
+            ...(transaction ? { transaction: transaction } : {})
+        })
+        return conversation
     }
 
     getConversations = async (userId: string, transaction = null) => {
@@ -27,32 +43,16 @@ class ConversationRepository {
                     model: User,
                     attributes: ["id"],
                     through: {
-                        attributes: ["lastSeenAt"],
+                        attributes: ["lastSeenAt", "role"],
                         where: {
                             userId: userId // Filter by the user ID
-                        }
-
+                        },
                     },
-
                 }
             ],
             ...(transaction ? { transaction: transaction } : {})
         })
-        const result: ConversationResponse[] = await Promise.all(conversations.map(async c => {
-            console.log(c)
-            const timeline = new Date(c.getDataValue("Users")![0]!.getDataValue("User_Conversations")!.getDataValue("lastSeenAt"))
-
-            const count = await Message.count({
-                where: {
-
-                    createdAt: { [Op.gt]: timeline }
-                }
-            })
-            const conv = toConversationDTO(c)
-            conv.unreadMessage = count;
-            return conv
-        }))
-        return result
+        return conversations
     }
 }
 

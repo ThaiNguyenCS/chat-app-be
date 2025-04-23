@@ -24,6 +24,21 @@ class UserConversationRepository {
         });
     }
 
+    update = async (conversationId: string, userId: string, data: { role?: string }, transaction = null) => {
+        const { role } = data
+        await User_Conversation.update(
+            {
+                role: role
+            },
+            {
+                where: {
+                    userId: userId,
+                    conversationId: conversationId
+                },
+                ...(transaction ? { transaction: transaction } : {})
+            })
+    }
+
 }
 
 export default UserConversationRepository;

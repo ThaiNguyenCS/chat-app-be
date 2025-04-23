@@ -34,7 +34,7 @@ const userConversationRepository = new UserConversationRepository()
 const conversationRepository = new ConversationRepository()
 export const conversationValidator = new ConversationValidator({ conversationRepository })
 const conversationService = new ConversationService({ conversationRepository, userConversationRepository, conversationValidator, userRepository })
-const conversationController = new ConversationController({ conversationService })
+const conversationController = new ConversationController({ conversationService, messageService })
 
 
 
